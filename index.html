@@ -14,22 +14,50 @@
 </style>
 
 <canvas></canvas>
+
+<script src="js/game.js"></script>
+<script src="js/map.js"></script>
+<script src="js/tile.js"></script>
+<script src="js/monster.js"></script>
+<script src="js/util.js"></script>
+<script src="js/spell.js"></script>
+
 <script>
-    canvas = document.querySelector("canvas");
-    ctx = canvas.getContext("2d");
+    tileSize = 64;
+    numTiles = 9;
+    uiWidth = 4;
+
     x = y = 0;
+    spritesheet = new Image();
+    spritesheet.src = 'spritesheet.png';
 
     document.querySelector("html").onkeypress = function(e){
         if(e.key=="w") y--;
-        if(e.key=="s") y++;
+        if(e.key=="s") y++;1
         if(e.key=="a") x--;
         if(e.key=="d") x++;
     };
 
+    function drawSprite(sprite, x, y){
+        ctx.drawImage(
+            spritesheet, //그릴 이미지
+            sprite*32,  //원본 이미지 x 위치
+            0,          //원본 이미지 y 위치
+            32,         // 잘라낼 가로길이
+            32,         // 잘라낼 세로길이
+            x*tileSize, //출력할 x 위치
+            y*tileSize, //출력할 y 위치
+            tileSize, // 출력할 이미지 가로길이
+            tileSize //출력할 이미지 세로길이
+            );
+    }
+
     function draw(){
-        ctx.clearRect(0,0,1000,1000);
-        ctx.fillRect (x*20,y*20,20,20);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        drawSprite(0, x, y);
     }
 
     setInterval(draw, 15);
+
+    setupCanvas();
 </script>
