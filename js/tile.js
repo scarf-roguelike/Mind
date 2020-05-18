@@ -4,7 +4,12 @@ class Tile{
         this.y = y;
         this.sprite = sprite;
         this.passable = passable;
-	}
+    }
+
+    //manhattan distance
+    dist(other){
+        return Math.abs(this.x-other.x)+Math.abs(this.y-other.y);
+    }
 
 	draw(){
         drawSprite(this.sprite, this.x, this.y);

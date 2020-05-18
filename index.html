@@ -26,16 +26,24 @@
     tileSize = 64;
     numTiles = 9;
     uiWidth = 4;
+    level = 1;
+    graphic = "ASCII";
 
-    x = y = 0;
     spritesheet = new Image();
-    spritesheet.src = 'spritesheet.png';
+
+    if (graphic == "TILES"){
+        spritesheet.src = 'spritesheet.png';
+    }else if (graphic == "ASCII"){
+        spritesheet.src = 'spritesheet_ascii.png';
+    } else {
+        throw 'no spritesheet found'
+    }
 
     document.querySelector("html").onkeypress = function(e){
-        if(e.key=="w") y--;
-        if(e.key=="s") y++;1
-        if(e.key=="a") x--;
-        if(e.key=="d") x++;
+        if(e.key=="w") player.tryMove(0, -1);
+        if(e.key=="s") player.tryMove(0, 1);
+        if(e.key=="a") player.tryMove(-1, 0);
+        if(e.key=="d") player.tryMove(1, 0);
     };
 
     function drawSprite(sprite, x, y){
@@ -61,7 +69,21 @@
             }
         }
 
-        drawSprite(0, x, y);
+        for(let i=0;i<monsters.length;i++){
+        monsters[i].draw();
+        }
+
+        player.draw();
+    }
+
+    function tick(){
+    for(let k=monsters.length-1;k>=0;k--){
+        if(!monsters[k].dead){
+            monsters[k].update();
+        }else{
+            monsters.splice(k,1);
+        }
+        }
     }
 
     setInterval(draw, 15);
@@ -70,8 +92,6 @@
 
     generateLevel();
 
-    startingTile = randomPassableTile();
-    x = startingTile.x;
-    y = startingTile.y;
+    player = new Player(randomPassableTile());
 
 </script>
