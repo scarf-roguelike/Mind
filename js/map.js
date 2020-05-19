@@ -55,7 +55,8 @@ function generateMonsters(){
 }
 
 function spawnMonster(){
-    let monsterType = shuffle([Aenemy, Benemy])[0];
+    //let monsterType = shuffle([Aenemy, Benemy, Cenemy, Denemy])[0];
+    monsterType = Cenemy
     let monster = new monsterType(randomPassableTile());
     monsters.push(monster);
 }

@@ -3,9 +3,14 @@ class Monster{
         this.move(tile);
         this.sprite = sprite;
         this.hp = hp;
-	}
+    }
 
     update(){
+        if(this.stunned){
+            this.stunned = false;
+            return;
+        }
+
         this.doStuff();
     }
 
@@ -23,16 +28,50 @@ class Monster{
 
 	draw(){
         drawSprite(this.sprite, this.tile.x, this.tile.y);
+        this.drawHp();
 	}
+
+    drawHp(){
+        for(let i=0; i<this.hp; i++){
+            drawSprite(
+                8,
+                this.tile.x + (i%3)*(5/16),
+                this.tile.y - Math.floor(i/3)*(5/16)
+            );
+        }
+    }
 
     tryMove(dx, dy){
         let newTile = this.tile.getNeighbor(dx,dy);
         if(newTile.passable){
             if(!newTile.monster){
                 this.move(newTile);
+            }else{
+                if(this.isPlayer != newTile.monster.isPlayer){
+                    this.attackedThisTurn = true;
+                    newTile.monster.stunned = true;
+                    newTile.monster.hit(1);
+                }
             }
             return true;
         }
+    }
+
+    hit(damage){
+        this.hp -= damage;
+        if(this.hp <= 0){
+            this.die();
+        }
+    }
+
+    heal(damage){
+        this.hp = Math.min(maxHp, this.hp+damage);
+    }
+
+    die(){
+        this.dead = true;
+        this.tile.monster = null;
+        this.sprite = 1; //수정
     }
 
     move(tile){
@@ -59,12 +98,58 @@ class Player extends Monster{
 
 class Aenemy extends Monster{
     constructor(tile){
-        super(tile, 4, 3);
+        super(tile, 4, 2);
+    }
+
+    doStuff(){
+        this.attackedThisTurn = false;
+        super.doStuff();
+
+        if(!this.attackedThisTurn){
+            super.doStuff();
+        }
     }
 }
 
 class Benemy extends Monster{
     constructor(tile){
-        super(tile, 5, 1);
+        super(tile, 5, 3);
+    }
+
+    update(){
+        let startedStunned = this.stunned;
+        super.update();
+        if(!startedStunned){
+            this.stunned = true;
+        }
+    }
+}
+
+class Cenemy extends Monster{
+    constructor(tile){
+        super(tile, 6, 1);
+    }
+
+    doStuff(){
+        let neighbors = this.tile.getAdjacentPassableNeighbors().filter(t => !t.passable && inBounds(t.x,t.y));
+        if(neighbors.length){
+            neighbors[0].replace(Floor);
+            this.heal(0.5);
+        }else{
+            super.doStuff();
+        }
+    }
+}
+
+class Denemy extends Monster{
+    constructor(tile){
+        super(tile, 7, 2);
+    }
+
+    doStuff(){
+        let neighbors = this.tile.getAdjacentPassableNeighbors();
+        if(neighbors.length){
+            this.tryMove(neighbors[0].x - this.tile.x, neighbors[0].y - this.tile.y);
+        }
     }
 }
