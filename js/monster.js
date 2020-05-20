@@ -4,6 +4,12 @@ class Monster{
         this.sprite = sprite;
         this.hp = hp;
         this.teleportCounter = 3;
+        this.offsetX = 0;
+        this.offsetY = 0;
+    }
+
+    changeGraphic(sprite){
+        this.sprite = sprite
     }
 
     update(){
@@ -30,19 +36,22 @@ class Monster{
 
 	draw(){
         if(this.teleportCounter > 0){ //1,2,3
-            drawSprite(SPRITE_INDEX['ENEMY_PORTAL_'+(4-this.teleportCounter)], this.tile.x, this.tile.y);
+            drawSprite(SPRITE_INDEX['ENEMY_PORTAL_'+(4-this.teleportCounter)], this.getDisplayX(),  this.getDisplayY());
         }else{
-            drawSprite(this.sprite, this.tile.x, this.tile.y);
+            drawSprite(this.sprite, this.getDisplayX(),  this.getDisplayY());
             this.drawHp();
         }
+
+        this.offsetX -= Math.sign(this.offsetX)*(1/8);
+        this.offsetY -= Math.sign(this.offsetY)*(1/8);
 	}
 
     drawHp(){
         for(let i=0; i<this.hp; i++){
             drawSprite(
                 SPRITE_INDEX['HEALTH_ICON'],
-                this.tile.x + (i%3)*(5/16),
-                this.tile.y - Math.floor(i/3)*(5/16)
+                this.getDisplayX() + (i%3)*(5/16),
+                this.getDisplayY() - Math.floor(i/3)*(5/16)
             );
         }
     }
@@ -57,6 +66,11 @@ class Monster{
                     this.attackedThisTurn = true;
                     newTile.monster.stunned = true;
                     newTile.monster.hit(1);
+
+                    shakeAmount = 5;
+
+                    this.offsetX = (newTile.x - this.tile.x)/2;
+                    this.offsetY = (newTile.y - this.tile.y)/2;
                 }
             }
             return true;
@@ -68,6 +82,13 @@ class Monster{
         if(this.hp <= 0){
             this.die();
         }
+
+        if(this.isPlayer){
+            playSound("hit1");
+        }else{
+            playSound("hit2");
+        }
+
     }
 
     heal(damage){
@@ -83,16 +104,26 @@ class Monster{
     move(tile){
         if(this.tile){
             this.tile.monster = null;
+            this.offsetX = this.tile.x - tile.x;
+            this.offsetY = this.tile.y - tile.y;
         }
         this.tile = tile;
         tile.monster = this;
         tile.stepOn(this);
     }
+
+    getDisplayX(){
+        return this.tile.x + this.offsetX;
+    }
+
+    getDisplayY(){
+        return this.tile.y + this.offsetY;
+    }
 }
 
 class Player extends Monster{
     constructor(tile){
-        super(tile, 1, 3); //나중에 플레이어 변경 가능하게 바꾸기.
+        super(tile, load_graphic(SPRITE_INDEX['PLAYER_1_TILE'], isASCII, isPlayer2), 3); //나중에 플레이어 변경 가능하게 바꾸기.
         this.isPlayer = true;
         this.teleportCounter = 0;
     }

@@ -58,6 +58,7 @@ class Floor extends Tile{
 
     stepOn(monster){
         //TODO: complete
+        //playSound("treasure");
     }
 }
 
@@ -74,6 +75,7 @@ class Exit extends Tile{
 
     stepOn(monster){
         if(monster.isPlayer){
+            playSound("newLevel");
             if(level == numLevels){
                 showTitle();
             }else{

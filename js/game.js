@@ -30,8 +30,8 @@ function drawSprite(sprite, x, y){
         0,          //원본 이미지 y 위치
         32,         // 잘라낼 가로길이
         32,         // 잘라낼 세로길이
-        x*tileSize, //출력할 x 위치
-        y*tileSize, //출력할 y 위치
+        x*tileSize + shakeX, //출력할 x 위치
+        y*tileSize + shakeY , //출력할 y 위치
         tileSize, // 출력할 이미지 가로길이
         tileSize //출력할 이미지 세로길이
         );
@@ -40,6 +40,8 @@ function drawSprite(sprite, x, y){
 function draw(){
     if(gameState == "running" || gameState == "dead"){
         ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        screenshake();
 
         for(let i=0;i<numTiles;i++){
             for(let j=0;j<numTiles;j++){
@@ -55,6 +57,30 @@ function draw(){
 
         drawText("Level: "+level, 30, false, 40, "violet");
     }
+}
+
+function load_graphic(index, isPlayerASCII=false, isPlayer2=false){
+    //index_enum = SPRITE_INDEX[index]
+    index_enum = index
+
+    if (isPlayer2){
+    index_enum += 2;
+    }
+
+    if (isPlayerASCII){
+        return index_enum + 1;
+    } else {
+        return index_enum;
+    }
+}
+
+function screenshake(){
+    if(shakeAmount){
+        shakeAmount--;
+    }
+    let shakeAngle = Math.random()*Math.PI*2;
+    shakeX = Math.round(Math.cos(shakeAngle)*shakeAmount);
+    shakeY = Math.round(Math.sin(shakeAngle)*shakeAmount);
 }
 
 function tick(){
@@ -88,6 +114,21 @@ function showTitle(){
     drawText("READER", 70, true, canvas.height/2 - 50, "white");
 }
 
+function initSounds(){
+    sounds = {
+        hit1: new Audio('sounds/hit1.wav'),
+        hit2: new Audio('sounds/hit2.wav'),
+        treasure: new Audio('sounds/treasure.wav'),
+        newLevel: new Audio('sounds/newLevel.wav'),
+        spell: new Audio('sounds/spell.wav'),
+    };
+}
+
+function playSound(soundName){
+    sounds[soundName].currentTime = 0;
+    sounds[soundName].play();
+}
+
 function startGame(){
     level = 1;
     startLevel(startingHp);
@@ -106,3 +147,4 @@ function startLevel(playerHp){
 
     randomPassableTile().replace(Exit);
 }
+

@@ -21,6 +21,7 @@
 <script src="js/monster.js"></script>
 <script src="js/util.js"></script>
 <script src="js/spell.js"></script>
+<script src="js/graphic_config_placeholder.js"></script>
 <script src="js/spritesheet_index_placeholder.js"></script>
 <script>
     tileSize = 64;
@@ -30,9 +31,12 @@
     maxHp = 6;
     startingHp = 3;
     numLevels = 6;
-    isASCII = true;
-    isPlayer2 = false;
+
     gameState = "loading";
+
+    shakeAmount = 0;
+    shakeX = 0;
+    shakeY = 0;
 
     spritesheet = new Image();
     spritesheet.src = 'spritesheet.png';
@@ -48,6 +52,12 @@
         if(e.key=="s") player.tryMove(0, 1);
         if(e.key=="a") player.tryMove(-1, 0);
         if(e.key=="d") player.tryMove(1, 0);
+
+        if(e.key=="q" || e.key=="e"){
+            if (e.key=="q") isASCII = !isASCII;
+            if (e.key=="e") isPlayer2 = !isPlayer2;
+            player.changeGraphic(load_graphic(SPRITE_INDEX['PLAYER_1_TILE'], isASCII, isPlayer2));
+            }
         }
     };
 
@@ -55,4 +65,5 @@
 
     setupCanvas();
 
+    initSounds();
 </script>
