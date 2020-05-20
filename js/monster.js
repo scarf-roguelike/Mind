@@ -3,10 +3,12 @@ class Monster{
         this.move(tile);
         this.sprite = sprite;
         this.hp = hp;
+        this.teleportCounter = 3;
     }
 
     update(){
-        if(this.stunned){
+        this.teleportCounter--;
+        if(this.stunned || this.teleportCounter > 0){
             this.stunned = false;
             return;
         }
@@ -27,14 +29,18 @@ class Monster{
     }
 
 	draw(){
-        drawSprite(this.sprite, this.tile.x, this.tile.y);
-        this.drawHp();
+        if(this.teleportCounter > 0){ //1,2,3
+            drawSprite(SPRITE_INDEX['ENEMY_PORTAL_'+(4-this.teleportCounter)], this.tile.x, this.tile.y);
+        }else{
+            drawSprite(this.sprite, this.tile.x, this.tile.y);
+            this.drawHp();
+        }
 	}
 
     drawHp(){
         for(let i=0; i<this.hp; i++){
             drawSprite(
-                8,
+                SPRITE_INDEX['HEALTH_ICON'],
                 this.tile.x + (i%3)*(5/16),
                 this.tile.y - Math.floor(i/3)*(5/16)
             );
@@ -80,13 +86,15 @@ class Monster{
         }
         this.tile = tile;
         tile.monster = this;
+        tile.stepOn(this);
     }
 }
 
 class Player extends Monster{
     constructor(tile){
-        super(tile, 0, 3);
+        super(tile, 1, 3); //나중에 플레이어 변경 가능하게 바꾸기.
         this.isPlayer = true;
+        this.teleportCounter = 0;
     }
 
     tryMove(dx, dy){
@@ -98,7 +106,7 @@ class Player extends Monster{
 
 class Aenemy extends Monster{
     constructor(tile){
-        super(tile, 4, 2);
+        super(tile, SPRITE_INDEX['ENEMY_A'], 2);
     }
 
     doStuff(){
@@ -113,7 +121,7 @@ class Aenemy extends Monster{
 
 class Benemy extends Monster{
     constructor(tile){
-        super(tile, 5, 3);
+        super(tile, SPRITE_INDEX['ENEMY_B'], 3);
     }
 
     update(){
@@ -127,7 +135,7 @@ class Benemy extends Monster{
 
 class Cenemy extends Monster{
     constructor(tile){
-        super(tile, 6, 1);
+        super(tile, SPRITE_INDEX['ENEMY_C'], 1);
     }
 
     doStuff(){
@@ -144,7 +152,7 @@ class Cenemy extends Monster{
 
 class Denemy extends Monster{
     constructor(tile){
-        super(tile, 7, 2);
+        super(tile, SPRITE_INDEX['ENEMY_D'], 2);
     }
 
     doStuff(){

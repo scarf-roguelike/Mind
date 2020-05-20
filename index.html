@@ -21,37 +21,38 @@
 <script src="js/monster.js"></script>
 <script src="js/util.js"></script>
 <script src="js/spell.js"></script>
+<script src="js/spritesheet_index_placeholder.js"></script>
 <script>
     tileSize = 64;
     numTiles = 9;
     uiWidth = 4;
     level = 1;
     maxHp = 6;
-    graphic = "ASCII";
+    startingHp = 3;
+    numLevels = 6;
+    isASCII = true;
+    isPlayer2 = false;
+    gameState = "loading";
 
     spritesheet = new Image();
-
-    if (graphic == "TILES"){
-        spritesheet.src = 'spritesheet.png';
-    }else if (graphic == "ASCII"){
-        spritesheet.src = 'spritesheet_ascii.png';
-    } else {
-        throw 'no spritesheet found'
-    }
+    spritesheet.src = 'spritesheet.png';
+    spritesheet.onload = showTitle;
 
     document.querySelector("html").onkeypress = function(e){
+        if(gameState == "title"){
+            startGame();
+        }else if(gameState == "dead"){
+            showTitle();
+        }else if(gameState == "running"){
         if(e.key=="w") player.tryMove(0, -1);
         if(e.key=="s") player.tryMove(0, 1);
         if(e.key=="a") player.tryMove(-1, 0);
         if(e.key=="d") player.tryMove(1, 0);
+        }
     };
 
     setInterval(draw, 15);
 
     setupCanvas();
-
-    generateLevel();
-
-    player = new Player(randomPassableTile());
 
 </script>

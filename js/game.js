@@ -10,6 +10,18 @@ function setupCanvas(){
     ctx.imageSmoothingEnabled = false;
 }
 
+function drawText(text, size, centered, textY, color){
+    ctx.fillStyle = color;
+    ctx.font = size + "px monospace";
+    let textX;
+    if(centered){
+        textX = (canvas.width-ctx.measureText(text).width)/2;
+    }else{
+        textX = canvas.width-uiWidth*tileSize+25;
+    }
+
+    ctx.fillText(text, textX, textY);
+}
 
 function drawSprite(sprite, x, y){
     ctx.drawImage(
@@ -26,19 +38,23 @@ function drawSprite(sprite, x, y){
 }
 
 function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(gameState == "running" || gameState == "dead"){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    for(let i=0;i<numTiles;i++){
-        for(let j=0;j<numTiles;j++){
-            getTile(i,j).draw();
+        for(let i=0;i<numTiles;i++){
+            for(let j=0;j<numTiles;j++){
+                getTile(i,j).draw();
+            }
         }
-    }
 
-    for(let i=0;i<monsters.length;i++){
-    monsters[i].draw();
-    }
+        for(let i=0;i<monsters.length;i++){
+        monsters[i].draw();
+        }
 
-    player.draw();
+        player.draw();
+
+        drawText("Level: "+level, 30, false, 40, "violet");
+    }
 }
 
 function tick(){
@@ -49,4 +65,44 @@ function tick(){
             monsters.splice(k,1);
         }
     }
+
+    if(player.dead){
+        gameState = "dead";
+    }
+
+    spawnCounter--;
+    if(spawnCounter <= 0){
+        spawnMonster();
+        spawnCounter = spawnRate;
+        spawnRate--;
+    }
+}
+
+function showTitle(){
+    ctx.fillStyle = 'rgba(0,0,0,.75)';
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+
+    gameState = "title";
+
+    drawText("MIND", 70, true, canvas.height/2 - 110, "white");
+    drawText("READER", 70, true, canvas.height/2 - 50, "white");
+}
+
+function startGame(){
+    level = 1;
+    startLevel(startingHp);
+
+    gameState = "running";
+}
+
+function startLevel(playerHp){
+    spawnRate = 15;
+    spawnCounter = spawnRate;
+
+    generateLevel();
+
+    player = new Player(randomPassableTile());
+    player.hp = playerHp;
+
+    randomPassableTile().replace(Exit);
 }
