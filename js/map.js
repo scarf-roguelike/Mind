@@ -52,6 +52,10 @@ function generateMonsters(){
     for(let i=0;i<numMonsters;i++){
         spawnMonster();
     }
+
+    for(let i=0;i<3;i++){
+        randomPassableTile().treasure = true;
+    }
 }
 
 function spawnMonster(){

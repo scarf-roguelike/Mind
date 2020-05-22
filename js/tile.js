@@ -18,6 +18,10 @@ class Tile{
 
 	draw(){
         drawSprite(this.sprite, this.x, this.y);
+
+        if(this.treasure){
+            drawSprite(SPRITE_INDEX['TREASURE'], this.x, this.y);
+        }
     }
 
     getNeighbor(dx, dy){
@@ -57,8 +61,12 @@ class Floor extends Tile{
     };
 
     stepOn(monster){
-        //TODO: complete
-        //playSound("treasure");
+        if(monster.isPlayer && this.treasure){
+            score++;
+            this.treasure = false;
+            playSound("treasure");
+            spawnMonster();
+        }
     }
 }
 
@@ -77,6 +85,7 @@ class Exit extends Tile{
         if(monster.isPlayer){
             playSound("newLevel");
             if(level == numLevels){
+                addScore(score, true);
                 showTitle();
             }else{
                 level++;

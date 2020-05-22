@@ -35,9 +35,9 @@ class Monster{
     }
 
 	draw(){
-        if(this.teleportCounter > 0){ //1,2,3
+        if(this.teleportCounter > 1){ //1,2,3
             drawSprite(SPRITE_INDEX['ENEMY_PORTAL_'+(4-this.teleportCounter)], this.getDisplayX(),  this.getDisplayY());
-        }else{
+        }else {
             drawSprite(this.sprite, this.getDisplayX(),  this.getDisplayY());
             this.drawHp();
         }

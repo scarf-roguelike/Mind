@@ -14,5 +14,6 @@ const SPRITE_INDEX = {
         "ENEMY_PORTAL_1": 12,
         "ENEMY_PORTAL_2": 13,
         "ENEMY_PORTAL_3": 14,
-        "EXIT_PORTAL": 15
+        "EXIT_PORTAL": 15,
+        "TREASURE": 16
     }
